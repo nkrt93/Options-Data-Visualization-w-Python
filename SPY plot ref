@@ -16,3 +16,4 @@ def closing_price(ticker):
 SPY = closing_price('SPY')
 plt.plot(SPY)
 plt.show()
+https://github.com/nkrt93/Options-Data-Visualization-w-Python/blob/main/SPYplotconcept.png
