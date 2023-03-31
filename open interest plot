@@ -1,0 +1,44 @@
+import yfinance as yf
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Define the ticker and expiry date
+ticker = 'AAPL'
+expiry = '2023-04-21'
+
+# Fetch the options data
+options = yf.Ticker(ticker).option_chain(expiry)
+
+# Get the call and put options data
+calls = options.calls
+puts = options.puts
+
+# Extract the strike prices and open interest for calls
+call_strike_prices = calls['strike']
+call_open_interest = calls['openInterest']
+
+# Extract the strike prices and open interest for puts
+put_strike_prices = puts['strike']
+put_open_interest = puts['openInterest']
+
+# Combine the call and put open interest data for each strike price
+strike_prices = sorted(list(set(call_strike_prices) | set(put_strike_prices)))
+call_oi_dict = dict(zip(call_strike_prices, call_open_interest))
+put_oi_dict = dict(zip(put_strike_prices, put_open_interest))
+open_interest = np.array([np.array([call_oi_dict.get(strike, 0), put_oi_dict.get(strike, 0)]) for strike in strike_prices])
+
+# Create the stacked bar plot
+fig, ax = plt.subplots()
+ax.bar(strike_prices, open_interest[:, 0], label='Calls')
+ax.bar(strike_prices, open_interest[:, 1], bottom=open_interest[:, 0], label='Puts')
+
+# Set the axis labels and title
+ax.set_xlabel('Strike Price')
+ax.set_ylabel('Open Interest')
+ax.set_title(f'{ticker} Options ({expiry})')
+
+# Add a legend
+ax.legend()
+
+# Show the plot
+plt.show()
